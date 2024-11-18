@@ -7,7 +7,7 @@ from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import CommandStart, Command
 
 from aiogram.types import Message, FSInputFile
-from config import TOKEN, WEATHER_TOKEN
+from consts import TOKEN, WEATHER_TOKEN
 
 from googletrans import Translator
 
