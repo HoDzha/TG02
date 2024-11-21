@@ -1,21 +1,14 @@
 import asyncio
-import random
-import os
-from gtts import gTTS
-import requests
-
-from aiogram import Bot, Dispatcher, F, types
-from aiogram.filters import CommandStart, Command
+from aiogram import Bot, Dispatcher
+from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.fsm.storage.memory import MemoryStorage
 import sqlite3
 import aiohttp
 import logging
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message
 from consts import TOKEN, WEATHER_TOKEN
 
-from googletrans import Translator
 
 
 
@@ -60,12 +53,13 @@ async def name(message: Message, state: FSMContext):
 
 @dp.message(Form.age)
 async def age(message: Message, state: FSMContext):
-    await message.update_data(age=message.text)
+    await state.update_data(age = message.text)
     await message.answer('Из какого ты города?')
     await state.set_state(Form.city)
 
 @dp.message(Form.city)
 async def city(message: Message, state: FSMContext):
+    await state.update_data(city=message.text)
     user_data = await state.get_data()
     conn = sqlite3.connect('user_data.db')
     cur = conn.cursor()
@@ -83,7 +77,7 @@ async def city(message: Message, state: FSMContext):
                 humidity = main['humidity']
                 weather = weather_data['weather'][0]
                 description = weather['description']
-                weather_report=(f'В городе {user_data["city"]} \n'
+                weather_report=(f'В городе {user_data["city"]} где живет {user_data["name"]} возраст {user_data["age"]} \n'
                                 f'температура {temperature}°C, \n'
                                 f'ощущается как {feels_like}°C, \n'
                                 f'влажность {humidity}%, \n'
