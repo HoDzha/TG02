@@ -6,11 +6,10 @@ import requests
 from aiogram import Bot, Dispatcher, F, types
 from aiogram.filters import CommandStart, Command
 
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message, FSInputFile, CallbackQuery
 from consts import TOKEN, WEATHER_TOKEN
-
+import  keyboards as kb
 from googletrans import Translator
-
 
 
 bot = Bot(TOKEN)
@@ -48,6 +47,13 @@ def get_weather(city):
         )
     except Exception as e:
         return f"Ошибка при получении данных: {str(e)}"
+
+
+
+@dp.callback_query(F.data == "news")
+async def news(callback: CallbackQuery):
+    await callback.answer("Новости подгружаются", show_alert=True)
+    await callback.message.edit_text('Вот свежие новости!', reply_markup=await kb.test_keyboard())
 
 
 @dp.message(Command('audio'))
@@ -126,6 +132,12 @@ async def react_photo(message: Message):
 async def aitext(message: Message):
     await message.answer('ИИ - это дох и больше текста ааа')
 
+
+@dp.message(F.text == 'Тестовая кнопка 1')
+async def button1_text(message: Message):
+    await message.answer('кнопка 1 нажата успешно. Орешник уже летит')
+
+
 @dp.message(Command('help'))
 async def help(message: Message):
     await message.answer('Этот бот умеет выполнять команды \n /start  \n /help \n /photo \n /weather \n Что такое ИИ')
@@ -133,7 +145,7 @@ async def help(message: Message):
 
 @dp.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.answer(f"Привет, {message.from_user.full_name}!")
+    await message.answer(f"Привет, {message.from_user.full_name}!", reply_markup=kb.inline_keyboard_test)
 
 @dp.message()
 async def translate_text(message: types.Message):
